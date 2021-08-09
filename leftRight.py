@@ -1,15 +1,18 @@
 import time
 import serial
+from collections import deque
 
 # define serial communication
-ser = serial.Serial(
-        port = '/dev/ttyACM0',
-        baudrate = 9600,
-        parity = serial.PARITY_NONE,
-        stopbits = serial.STOPBITS_ONE,
-        bytesize = serial.EIGHTBITS,
-        timeout = 1
-        )
+# ser = serial.Serial(
+#         port = '/dev/ttyACM0',
+#         baudrate = 9600,
+#         parity = serial.PARITY_NONE,
+#         stopbits = serial.STOPBITS_ONE,
+#         bytesize = serial.EIGHTBITS,
+#         timeout = 1
+#         )
+
+ser = serial.Serial('COM4', 9600)
 
 # startup
 print("please center your eyes on screen and relax, 5 seconds until measurements")
@@ -19,7 +22,7 @@ time.sleep(5)
 print("measuring...")
 rest_avg = 0
 counter = 0
-while counter < 1000:
+while counter < 500:
     b = ser.readline()
     try:
         string_n = b.decode()
@@ -29,7 +32,7 @@ while counter < 1000:
         flt = 0
     rest_avg += flt
     counter += 1
-    time.sleep(0.01)
+    time.sleep(0.0010416)
 print(rest_avg)
 rest_avg /= counter
 print(rest_avg)
@@ -46,17 +49,10 @@ while 1:
         flt = float(string)
     except: 
         flt = rest_avg
-    if flt < 0.9*rest_avg:
-        if message != "left": 
-            message = "left"
-            print(message)
-    if flt > 1.1*rest_avg:
-        if message != "right":
-            message = "right"
-            print(message)
+    if flt < 0.98*rest_avg:
+            print(str(flt) + ": right")
+    elif flt > 1.02*rest_avg:
+            print(str(flt) + ": left")
     else:
-        if message != "resting":
-            message = "resting"
-            print(message)
-    time.sleep(0.01)
-
+        print(str(flt) + ": resting")
+    time.sleep(0.03472)
